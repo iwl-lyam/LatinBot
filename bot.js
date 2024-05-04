@@ -6,14 +6,7 @@ import dotenv from 'dotenv'
 dotenv.config({path: "./secrets.env"})
 import {gatewayLogger} from "./logger.js";
 
-import ban from './handler/ban.js'
-import unban from "./handler/unban.js";
-import kick from "./handler/kick.js";
-import mute from "./handler/mute.js";
-import unmute from "./handler/unmute.js";
-import warnings from "./handler/warnings.js";
-import feedback from "./handler/feedback.js";
-import finesse from "./handler/finesse.js";
+import ping from "./handler/ping.js";
 import request from "./request.js";
 
 let msgs = []
@@ -62,24 +55,24 @@ export default function bot() {
                         properties: {
                             os: "darwin",
                             browser: "who knows",
-                            device: "all change"
+                            device: "lyam"
                         }
                     }}))
 
                     gatewayLogger.verbose("Identify sent")
                     ident = true;
 
-                    (async function() {
-                        gatewayLogger.info("Producing message cache...")
-                        let channels = await request("/guilds/1188194695873036398/channels")
-
-                        channels.forEach(async c => {
-                            let msgss = await request(`/channels/${c.id}/messages`)
-                            msgss.forEach(e => {
-                                msgs.push(e)
-                            })
-                        })
-                    })()
+                    // (async function() {
+                    //     gatewayLogger.info("Producing message cache...")
+                    //     let channels = await request("/guilds/1188194695873036398/channels")
+                    //
+                    //     channels.forEach(async c => {
+                    //         let msgss = await request(`/channels/${c.id}/messages`)
+                    //         msgss.forEach(e => {
+                    //             msgs.push(e)
+                    //         })
+                    //     })
+                    // })()
                 }
 
                 break
@@ -92,29 +85,8 @@ export default function bot() {
                 gatewayLogger.debug(`Event: ${message.t}`)
                 if (message.t === "INTERACTION_CREATE") {
                     switch (message.d.data.name) {
-                        case 'ban':
-                            ban.execute(message.d)
-                            break
-                        case 'unban':
-                            unban.execute(message.d)
-                            break
-                        case 'kick':
-                            kick.execute(message.d)
-                            break
-                        case 'mute':
-                            mute.execute(message.d)
-                            break
-                        case 'unmute':
-                            unmute.execute(message.d, db)
-                            break
-                        case 'warnings':
-                            warnings.execute(message.d, db)
-                            break
-                        case 'feedback':
-                            feedback.execute(message.d, db)
-                            break
-                        case 'finesse':
-                            finesse.execute(message.d, db)
+                        case 'ping':
+                            ping.execute(message.d)
                             break
                         default:
                             throw new Error("Command not added to switch statement!")
